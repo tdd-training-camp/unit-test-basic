@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+
+  <title>Unit Test Basic</title>
+
+  <meta name="description" content="A Presentation for TDD Training Camp">
+  <meta name="author" content="Hu Hao">
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+  <link rel="stylesheet" href="css/reveal.css">
+  <link rel="stylesheet" href="css/theme/night.css" id="theme">
+
+  <!-- Code syntax highlighting -->
+  <link rel="stylesheet" href="lib/css/zenburn.css">
+
+  <!-- Printing and PDF exports -->
+  <script>
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+    document.getElementsByTagName('head')[0].appendChild(link);
+  </script>
+
+  <!--[if lt IE 9]>
+  <script src="lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+
+  <div class="reveal">
+
+    <!-- Any section element inside of this container is displayed as a slide -->
+    <div class="slides">
+
+      <section>
+        <h1>单元测试基础</h1>
+        <h3>Java 8 + JUnit 4</h3>
+        <p>
+          <small>Created by <a href="http://blog.huhao.name">Hu Hao (胡皓)</a> / <a href="mailto: huhao@outlook.com">huhao@outlook.com</a></small>
+        </p>
+      </section>
+
+      <section>
+        <section>
+          <h2>参考资料</h2>
+        </section>
+        <section>
+          <h3>Pragmatic Unit Testing in Java with JUnit</h3>
+          <h4>by Andy Hunt and Dave Thomas</h4>
+          <a href="https://pragprog.com/book/utj/pragmatic-unit-testing-in-java-with-junit">
+            <img width="300" height="365" data-src="image/utj.jpg" alt="Pragmatic Unit Testing in Java with JUnit">
+          </a>
+          <aside data-markdown class="notes">
+            这本书的中文名称叫：《单元测试之道 Java版：使用 JUnit》，作者是大名鼎鼎的 Andy Hunt 和 Dave Thomas，这本书还有一个 C# 版，使用的是 NUnit。 这本书发行于2003年9月1日，至今已经过去了将近13年的时间，期间英文版总共印刷了7次，最后一次印刷是在2010年1月6日，而如今的单元测试实践已然不同。
+          </aside>
+        </section>
+        <section>
+          <h3>Pragmatic Unit Testing in Java 8 with JUnit</h3>
+          <h4>by Jeff Langr, with Andy Hunt and Dave Thomas</h4>
+          <a href="https://pragprog.com/book/utj2/pragmatic-unit-testing-in-java-8-with-junit">
+            <img width="300" height="360" data-src="image/utj2.jpg" alt="Pragmatic Unit Testing in Java with JUnit">
+          </a>
+          <aside data-markdown class="notes">
+            这本书于2015年3月16日出版，它已前一本为基础，参考这十多年来的单元测试最佳实践，以重构和整洁代码为纽带，并引入了测试驱动开发的内容，可以说，是目前最为丰富、准确和与时俱进的单元测试和测试驱动开发书籍。
+          </aside>
+        </section>
+        <section>
+          <h3>其它</h3>
+          <ul>
+            <li>Google</li>
+            <li>维基百科</li>
+            <li>个人经验</li>
+            <li>学习总结</li>
+            <li>新发现</li>
+          </ul>
+        </section>
+      </section>
+
+      <section>
+        <h2>特别强调</h2>
+        <p>
+          本演示是以“<span class="fragment highlight-red">先实现后测试</span>”为前提而展开的。
+        </p>
+
+        <aside data-markdown class="notes">
+          所以包含了在对遗留代码补充单元测试时所需要注意的内容。
+        </aside>
+      </section>
+
+      <section>
+        <section>
+          <h2>一些基础概念</h2>
+        </section>
+        <section>
+          <h3>什么是单元测试（Unit Test）？</h3>
+          <p class="fragment fade-in">
+            "Unit testing is when you write test code to verify <span class="fragment grow highlight-red">units</span> of code."
+          </p>
+
+          <aside data-markdown class="notes">
+            单元测试就是在编程时用测试代码来验证代码中的各个单元。
+          </aside>
+        </section>
+        <section>
+          <h3>什么是单元（Unit）？</h3>
+          <ul>
+            <li class="fragment fade-in">
+              在尺寸上并没有清晰的定义。
+            </li>
+            <li class="fragment fade-in">
+              一小段展现出某些“有用的行为”的代码
+            </li>
+            <li class="fragment fade-in">
+              一个单元自身<span style="color: lime">通常</span>不表示完整的端对端（end-to-end）行为，它只表示这个端对端行为中的一个子部分。
+            </li>
+          </ul>
+        </section>
+        <section>
+          <h3>何时、何故需要写单元测试？</h3>
+          <ul>
+            <li class="fragment fade-in">
+              你<span class="fragment grow highlight-red">刚刚</span>完成了一个特性（Feature）的编码并且想确保它能够按照预期工作。
+            </li>
+            <li class="fragment fade-in">
+              你想用文档记录一个代码中的修改，以便你或其他人能够在以后明白相关的意图。
+            </li>
+            <li class="fragment fade-in">
+              你需要修改代码，同时希望确保这些即将来临的修改不会破坏任何已经存在的行为。
+            </li>
+            <li class="fragment fade-in">
+              你希望了解当前系统中的行为。
+            </li>
+            <li class="fragment fade-in">
+              你希望知道第三方代码的行为在什么时候会与你的期望不符。
+            </li>
+          </ul>
+        </section>
+        <section style="text-align: left">
+          <h3 style="color: red">更重要的是：</h3>
+          <p>
+            好的单元测试能够增强你将系统交付生产环境时的信心，但你仍旧需要使用集成测试（Integration Test）和（或）验收测试（Acceptance Test）来验证端对端的行为。
+          </p>
+
+          <aside data-markdown class="notes">
+            这一句话清晰的指出了单元测试与集成测试或验收测试的区别和侧重，请再一次牢记：单元测试不验证端对端的行为，不要把单元测试和单元级别的集成测试搞混淆。
+
+            单元测试造成了端对端之间的测试缝隙，所以要考集成测试来填补这些缝隙。
+
+            集成测试和验收测试的内容不属于我们所讨论的范围，所以不多做讲解。
+          </aside>
+        </section>
+      </section>
+
+      <section>
+        <section>
+          <h2>使用 JUnit</h2>
+        </section>
+        <section>
+          <h3>太长不读版</h3>
+          <p>
+            <a href="http://junit.org/cookbook.html">http://junit.org/cookbook.html</a>
+          </p>
+        </section>
+        <section>
+          <h3>引入 JUnit 并运行测试</h3>
+          <p>（演示）</p>
+
+          <aside data-markdown class="notes">
+            - 创建 Java 工程
+            - 创建 src 源码目录
+            - 创建 demo 包
+            - 创建 HelloWorld 演示类
+            - 从 Maven 引入 JUnit
+            - 创建并设置 test 测试源码目录
+            - 创建 HelloWorld 测试代码
+          </aside>
+        </section>
+        <section>
+          <h3>运行原理</h3>
+          <p style="text-align: left">运行<span style="color: lime">每一个测试用例</span>（有 @Test 的方法）时，都会<span style="color: lime">单独实例化一个这个测试用例所属的测试类</span>，这样的好处是：<span style="color: lime">互不干扰</span>。</p>
+        </section>
+      </section>
+
+      <section>
+        <section>
+          <h2>如何正确的书写测试？</h2>
+        </section>
+        <section>
+          <h3>AAA 逻辑顺序</h3>
+          <pre><code data-trim class="java">
+@Test
+public void testSay() {
+
+    // Arrange
+    HelloWorld helloWorld = new HelloWorld();
+
+    // Act
+    String result = helloWorld.say();
+
+    // Assert
+    assertEquals("Hello World!", result);
+}
+          </code></pre>
+          <pre class="fragment fade-in"><code data-trim class="java">
+// After (optional)
+
+@After
+public void tearDown() {
+    // Close something...
+}
+          </code></pre>
+        </section>
+        <section>
+          <h3>Given...When...Then... 描述结构</h3>
+          <p class="fragment fade-in"><span style="color: lime">given</span>SomeContext<span style="color: lime">When</span>DoingSomeBehavior<span style="color: lime">Then</span>SomeResultOccurs</p>
+          <p class="fragment fade-in"><span style="color: lime">when</span>DoingSomeBehavior<span style="color: lime">Then</span>SomeResultOccurs</p>
+          <p class="fragment fade-in">someResultOccurs<span style="color: lime">When</span>DoingSomeBehavior</p>
+          <p class="fragment fade-in">some_Result_Occurs_<span style="color: lime">When_</span>Doing_Some_Behavior</p>
+          <p class="fragment fade-in">some_result_occurs_<span style="color: lime">when_</span>doing_some_behavior</p>
+
+          <aside data-markdown class="notes">
+            1. 这是一个符合 BDD 风格的命名方式，但是因为这样的命名太长了，我们通常可以省略到 given 的部分，因为 given 往往从测试类的上下文中获取到。
+            2. 而如果我们将测试类的名字做进一步优化的话，那么我们可以把 Then 这个单词省略掉，把其内容放到前面，很快我们就能看到这么做的好处。
+            3. 然而这样依然还是太难看清楚了，Camel 命名法对长名称的支持实在是太差，所以我们可以用 snake 命名法来解决，事实证明：短不见得能看清。
+            4. 话说回来，AAA 顺序也可以用 GWT 来说明，这完全是个信仰问题，不要打架。
+            5. 既然都用下划线分开了，每个单词首字母大写就有点过分了，我们又不是在写文章标题，所以都小写吧。
+
+            [不服请看 Martin Fowler 的博客](http://martinfowler.com/bliki/GivenWhenThen.html)
+          </aside>
+        </section>
+        <section>
+          <h3>测试即文档</h3>
+          <pre><code class="java" data-trim="">
+// Profile - class, Matches - method, Criterion - input or objective
+class Profile_Matches_Criterion { // Suite
+    @Before public void setup() {}; // Fixture
+    @Test public void true_when_matches_sole_answer() {}; // Case
+    @Test public void false_when_no_matching_answer_contained() {}; // Case
+    @Test public void true_when_one_of_multiple_answer_matches() {}; // Case
+    @Test public void true_for_any_dont_care_criterion() {}; // Case
+    @After public void tearDown() {}; // Fixture
+}
+
+class Profile_Matches_Criteria {
+    @Test public void false_when_none_of_multiple_criteria_match() {};
+    @Test public void true_when_any_of_multiple_criteria_match() {};
+    @Test public void false_when_any_must_meet_criteria_not_met() {};
+}
+
+class Profile_Score {
+    @Test public void zero_when_there_are_no_matches() {};
+}
+          </code></pre>
+
+          <aside data-markdown class="notes">
+            解释下 Case, Fixture, Suite。
+
+            一般在 Before 中初始化测试环境，比如清理数据库，在 After 中确保关闭某种东西，比如数据库连接（然而这不是单元测试）。
+
+            演示下能从这样的代码中还原怎样的行为：还原 Profile 类。
+
+            这是我在综合各种写法基础上总结并建议的书写风格。
+
+            用首字母大写的 Snake 命名法来命名 Suite（因为其中每个部分都需要重点提示），用 Camel 命名 Fixture，用小写 snake 命名法来命名 Case。
+
+            为什么要用 Snake 命名法？因为 Camel 不适合命名过长的名字。
+          </aside>
+        </section>
+        <section style="text-align: left">
+          <h3>测试在组织和书写方面追求的终极目标是：</h3>
+          <h3 class="fragment highlight-red">无限接近言简意赅的自然语言化文档</h3>
+          <aside data-markdown class="notes">
+            所以我们应该在代码的每一个层面上（小到一个变量）都追求最佳的可读性：整洁代码的重要性。
+          </aside>
+        </section>
+      </section>
+
+      <section>
+        <section>
+          <h2>一些增强语义化的神器</h2>
+        </section>
+        <section>
+          <h3>Matcher 神器</h3>
+          <h4><a href="http://hamcrest.org/">Hamcrest</a></h4>
+          <pre><code class="java" data-trim>
+// Core Hamcrest Matchers with assertThat
+@Test
+public void testAssertThatHamcrestCoreMatchers() {
+    assertThat("good", allOf(equalTo("good"), startsWith("good")));
+    assertThat("good", not(allOf(equalTo("bad"), equalTo("good"))));
+    assertThat("good", anyOf(equalTo("bad"), equalTo("good")));
+    assertThat(7, not(CombinableMatcher.&lt;Integer&gt; either(equalTo(3)).or(equalTo(4))));
+    assertThat(new Object(), not(sameInstance(new Object())));
+}
+          </code></pre>
+        </section>
+        <section>
+          <h3>Mock 神器</h3>
+          <h4><a href="http://mockito.org/">Mockito</a></h4>
+
+          <aside data-markdown class="notes">
+            需要搞明白什么是 Stub，什么是 Mock，这部分以后拿出来专门讲。
+          </aside>
+        </section>
+        <section>
+          <h3>异常处理和测试神器</h3>
+          <h4><a href="http://stefanbirkner.github.io/fishbowl">Fishbowl</a></h4>
+
+          <aside data-markdown class="notes">
+            Fishbowl 基于 Java 8 的 Lambda 表达式，消除了 try...catch... 和 Annotation（注记）带来的麻烦，增强了逻辑表现力，保护了 AAA 结构。
+          </aside>
+        </section>
+      </section>
+
+      <section>
+        <section>
+          <h2>一些需要注意的事情</h2>
+        </section>
+        <section style="text-align: left">
+          <h3>测试行为而不是测试方法</h3>
+          <p>在你写单元测试<span style="color: lime">之前</span>，必须<span style="color: lime">先搞清楚</span>：你测试的是一个类的<span style="color: lime">全部行为的集合</span>，而<span style="color: lime">不是</span>它的<span style="color: lime">每一个独立的方法</span>。</p>
+
+          <aside data-markdown class="notes">
+            其实从类的定义上来说，方法就是类的行为的接口。
+
+            也就是说，有些类的方法可能只是包含在了某个单元测试中，因为它如果脱离了这个行为则没有任何意义，它不需要被单独测试。
+
+            举个 ATM 机的例子：
+            - ATM 类有三个方法 deposit(), withdraw(), getBalance()
+            - 你只需要测试五种动作：单次存款，多次存款，单次取款，多次取款，企图超额取款
+            - 我们不需要为 getBalance() 方法专门写单元测试，因为以上5个行为都需要获取余额才能工作
+
+            在 Java 中，get 访问器也是一种方法，明白以上道理可以避免我们去测试一些无测试意义的方法，而避免产生大量无测试意义的方法的有效办法只有：测试先行。
+          </aside>
+        </section>
+        <section style="text-align: left">
+          <h3>测试与生产的关系</h3>
+          <p>单元测试是一个<span style="color: lime">纯粹的编程活动</span>，没有客户、最终用户或者非程序员的角色会看到并运行你的测试。</p>
+          <p>所以，<span style="color: lime">请对自己好点</span>，不断去寻求<span style="color: lime">更好</span>的<span style="color: lime">代码设计技巧</span>和<span style="color: lime">单元测试技巧</span>来<span style="color: lime">让写测试变得更容易</span>吧！</p>
+        </section>
+        <section style="text-align: left">
+          <h3>专注和单一的价值</h3>
+          <p><span style="color: lime">做人要坦荡荡</span>，这样出了问题以后就<span style="color: lime">不会掰扯不清</span>……</p>
+
+          <aside data-markdown class="notes">
+            单元测试要分离的足够清晰，一个测试只关注一个行为，当一个测试有多个断言的时候，这时候往往就是混淆了行为。
+
+            这样，一旦测试失败，我们就能够很快速的从测试的描述上定位失败的原因。
+          </aside>
+        </section>
+        <section style="text-align: left">
+          <h3>保持测试的相关性</h3>
+          <p>这样的好处就是<span style="color: lime">提升运行和维护测试时的便捷性</span>。</p>
+          <p>JUnit: <a href="https://github.com/junit-team/junit/wiki/Categories">Category</a> &amp; <a href="https://github.com/junit-team/junit/wiki/Ignoring-tests">Ignoring a Test</a></p>
+          <aside data-markdown class="notes">
+            单元测试要分离的足够清晰，一个测试只关注一个行为，当一个测试有多个断言的时候，这时候往往就是混淆了行为。
+
+            这样，一旦测试失败，我们就能够很快速的从测试的描述上定位失败的原因。
+          </aside>
+        </section>
+        <section style="text-align: left">
+          <h3>写断言时慎用不靠谱的预期目标</h3>
+          <p>因为：<span style="color: lime">你怎么能证明这些预期目标是对的呢？</span></p>
+
+          <aside data-markdown class="notes">
+            这些东西往往会是：某种表达式（直接使用正则表达式，然而后面会说到一个神器），或者储存了一段逻辑的执行结果的变量等。
+          </aside>
+        </section>
+      </section>
+
+      <section>
+        <section>
+          <h2>什么是好的测试？</h2>
+        </section>
+        <section>
+          <h3>FIRST 原则</h3>
+          <ol class="fragment fade-in" data-fragment-index="1">
+            <li><span class="fragment grow highlight-red" data-fragment-index="2">F</span>ast</li>
+            <li><span class="fragment grow highlight-red" data-fragment-index="2">I</span>solated</li>
+            <li><span class="fragment grow highlight-red" data-fragment-index="2">R</span>epeatable</li>
+            <li><span class="fragment grow highlight-red" data-fragment-index="2">S</span>elf-Validating</li>
+            <li><span class="fragment grow highlight-red" data-fragment-index="2">T</span>imely</li>
+          </ol>
+        </section>
+        <section style="text-align: left">
+          <h4><span style="color: red">F</span>ast<span class="fragment fade-in"> - 好的测试应该足够快！</span></h4>
+          <p class="fragment fade-in">单元测试的价值在于<span style="color: lime">持续</span>、<span style="color: lime">全面</span>、<span style="color: lime">快速</span>的反馈系统的健康程度，测试速度的降低将直接导致这些能力的降低。</p>
+          <p class="fragment fade-in">所以，你需要确保测试<span style="color: lime">易于编写</span>，代码<span style="color: lime">减少依赖</span>。</p>
+          <p class="fragment fade-in">你的实现代码越符合<span style="color: lime">面向对象设计（OOD）</span>的原则，你的单元测试就越容易编写。</p>
+
+          <aside data-markdown class="notes">
+            假设平均我们每一个单元测试执行需要200毫秒，那么如果我们总共拥有2500个单元测试的话，运行一遍全部的测试就需要8分钟。
+
+            导致测试速度降低的主要原因是因为我们的实现代码或不正确的测试代码中有过多的依赖，尤其是那些速度明显较慢的依赖，比如文件读写、网络连接、数据库读取等。
+
+            所以我们需要保证实现代码符合面向对象设计的原则，从根本上减少代码依赖，并合理使用 Mock 技术来优化测试代码。
+          </aside>
+        </section>
+        <section style="text-align: left">
+          <h4><span style="color: red">I</span>solated<span class="fragment fade-in"> - 好的测试应该相互隔离！</span></h4>
+          <p class="fragment fade-in">你应当能够在<span style="color: lime">任何时间</span>，以<span style="color: lime">任何顺序</span>，运行<span style="color: lime">任何一个测试。</span></p>
+          <p class="fragment fade-in">所以，你需要确保单元测试<span style="color: lime">不依赖于任何外部资源</span>，<span style="color: lime">不依赖于任何其它单元测试</span>，并且保证<span style="color: lime">一个测试只关注于一个小的行为</span>，测试与测试之间<span style="color: lime">相互独立</span>。</p>
+          <p class="fragment fade-in">你会发现<span style="color: lime">单一职责原则（SRP）</span>是为测试方法保驾护航的绝佳指导方针。</p>
+
+          <aside data-markdown class="notes">
+            好的单元测试关注于验证一小块代码，这符合对“单元”这个词的定义，与你的测试产生交互的代码越多（不管是直接的还是间接的），就会越发的事与愿违。
+
+            一个测试尽量保证只有一个断言，在你开始为一个测试添加第二个断言的时候，请先问问自己：“这个断言是否有助于验证这个单一的行为？或者，它所表现出的这个行为是否可以用另一个测试的名字来描述？”
+
+            如果一个测试会因多于一个的原因而被打破，请考虑将其拆分成多个测试，这样每当一个测试报错的时候，就能清晰准确的反映出其原因。
+          </aside>
+        </section>
+        <section style="text-align: left">
+          <h4><span style="color: red">R</span>epeatable<span class="fragment fade-in"> - 好的测试应该可复验！</span></h4>
+          <p class="fragment fade-in"><span style="color: lime">每一个测试</span>应当在<span style="color: lime">每一次运行</span>时产生与之前<span style="color: lime">一样的结果</span>。</p>
+          <p class="fragment fade-in">所以，你需要<span style="color: lime">排除</span>可能对测试结果<span style="color: lime">产生不确定性干扰</span>的影响，比如<span style="color: lime">时间因素</span>和<span style="color: lime">外部环境</span>。</p>
+          <p class="fragment fade-in">你可以使用<span style="color: lime">模拟对象（Mock Object）</span>和<span style="color: lime">其它工具</span>来做到这一点，比如 Java 8 中新增的 java.time.Clock 的 fixed() 方法。</p>
+
+          <aside data-markdown class="notes">
+            测试并不是凭空出现的，你设计了它，所以它应当处于你的完全掌控下。既然测试已按照你的预期工作，那么它就应该不受外界因素的影响，每一次且永远的保证测试按照预期工作。
+
+            破坏复验的问题通常发生在测试中使用了可变的时间（比如受时区、零点、夏令时影响的时间），或者使用了数据库、网络连接、不一致的环境等不稳定，或容易造成差异的东西。
+
+            当这些问题发生时你经常会得到一次惊喜，而这些问题往往不是 Bug，一般都是由于测试代码存在问题，你可能因此而浪费大量的时间在寻找问题的原因上。
+          </aside>
+        </section>
+        <section style="text-align: left">
+          <h4><span style="color: red">S</span>elf-Validating<span class="fragment fade-in"> - 好的测试应该能够自确认！</span></h4>
+          <p class="fragment fade-in">写测试是为了<span style="color: lime">节省时间</span>而<span style="color: lime">不是</span>为了<span style="color: lime">花费更多的时间</span>。</p>
+          <p class="fragment fade-in">所以，测试应当能够<span style="color: lime">自排列</span>、<span style="color: lime">及时</span>、<span style="color: lime">恰到好处</span>的<span style="color: lime">自动化运行</span>，并且能够<span style="color: lime">快速</span>、<span style="color: lime">准确</span>的<span style="color: lime">确认结果</span>，尽可能的<span style="color: lime">不需要手动操作或设置</span>。</p>
+          <p class="fragment fade-in">我们所面对的问题只有两个：如何<span style="color: lime">最细粒度</span>的自动化运行<span style="color: lime">因修改而影响到的</span>测试，以及如何<span style="color: lime">最快速的</span>自动化运行<span style="color: lime">全部的</span>测试（单元测试、集成测试等全部类型的测试）。</p>
+          <p class="fragment fade-in">单元测试<span style="color: lime">良好的排列组织方式</span>、<span style="color: lime">遵守测试原则</span>以及<span style="color: lime">自动化测试工具</span>是应对此问题的重要武器。</p>
+
+          <aside data-markdown class="notes">
+            良好的单元测试组织排列方式能够有效的提升自动化测试运行时的速度和反馈信息的明确性。
+
+            第一个问题当前的解决方案是：利用 IntelliJ 内置的测试工具来快速进行小范围的测试，或者使用 Infinitest 来自动测试受影响的测试。
+
+            第二个问题当前的解决方案是：利用 CI 工具，比如 Jenkins 等。
+
+            Infinitest 只解决到了每一次编译的粒度上，而且存在代码维护不及时的问题。终极方案是达到至少行级的粒度，这就不得不提到神器 nCrunch。
+          </aside>
+        </section>
+        <section style="text-align: left">
+          <h4><span style="color: red">T</span>imely<span class="fragment fade-in"> - 好的测试应该足够及时！</span></h4>
+          <p class="fragment fade-in">单元测试是一个<span style="color: lime">好习惯</span>，你<span style="color: lime">越是推迟</span>利用单元测试来验证你的代码，就<span style="color: lime">越是需要付出更多的代价</span>。同理，一旦你将代码提交进了代码库，你专门找时间<span style="color: lime">回过头来补测试</span>的机会也就<span style="color: lime">很小</span>了。</p>
+          <p class="fragment fade-in">所以，<span style="color: lime">请及时的写单元测试</span>！</p>
+          <p class="fragment fade-in">当你能够逐渐实现更短周期的“<span style="color: lime">先实现后测试</span>”时，你就可以考虑转变到下一步“<span style="color: lime">先测试后实现</span>”了。</p>
+
+          <aside data-markdown class="notes">
+            正因为单元测试是一个“好习惯”，所以它也和其它好习惯一样会被你轻易地以“仅此一次”这样的理由所破坏。
+
+            单元测试写的越多，你就越会发现在写小块的代码之前先想办法去写相应的单元测试是值得的，这样的好处是：首先，你会更容易的编写测试；其次，所写的测试将会在你进一步编码时立即予以反馈。
+          </aside>
+        </section>
+      </section>
+
+      <section>
+        <section>
+          <h2>测试什么？</h2>
+        </section>
+        <section>
+          <h3>Right-BICEP 原则</h3>
+          <ol class="fragment fade-in" data-fragment-index="1">
+            <li><span class="fragment grow highlight-red" data-fragment-index="2">Right</span></li>
+            <li><span class="fragment grow highlight-red" data-fragment-index="2">B</span>oundary Conditions</li>
+            <li><span class="fragment grow highlight-red" data-fragment-index="2">I</span>nverse Relationships</li>
+            <li><span class="fragment grow highlight-red" data-fragment-index="2">C</span>ross-Check</li>
+            <li><span class="fragment grow highlight-red" data-fragment-index="2">E</span>rror Conditions</li>
+            <li><span class="fragment grow highlight-red" data-fragment-index="2">P</span>erformance</li>
+          </ol>
+
+          <aside data-markdown class="notes">
+            bicep - 袖肥/二头肌
+
+            Right-BICEP 可以记忆成“正确的袖肥”或者“右二头肌”……
+          </aside>
+        </section>
+        <section style="text-align: left">
+          <h4><span style="color: red">Right</span><span class="fragment fade-in"> - 结果是正确的吗？</span></h4>
+          <p class="fragment fade-in">目标看似简单，但它离不开一个领域叫做：<a href="https://en.wikipedia.org/wiki/Happy_path">Happy-Path</a> 测试 —— 一个<span style="color: lime">定义良好的测试用例</span>应当使用<span style="color: lime">明确的输入</span>，执行时<span style="color: lime">不会产生异常</span>，并且产生<span style="color: lime">预期的输出</span>。</p>
+          <p class="fragment fade-in">它所反映的一个重要问题是：<span style="color: lime">我怎样才能知道我的代码是运行正确的呢？</span>如果你不能回答这个问题，说明你还不了解<span style="color: lime">最终用户的目标</span>或者所面对的<span style="color: lime">代码的行为</span>。</p>
+          <p class="fragment fade-in">换句话说：<span style="color: lime">首先，你必须知道你的代码怎样才算运行正确了！</span></p>
+
+          <aside data-markdown class="notes">
+            为什么叫做 Happy-Path？因为如果达成了某些目标，最终用户会 Happy。
+
+            举个简单的例子：你所测试的一个方法是实现一个加法计算，这个方法接受两个参数并返回这两个参数的和，你可以在测试时输入1和2然后得到3，也可以输入100和200然后得到300，但是我们到底应该输入哪一种才能证明这个代码运行时正确的？如果你会在这里纠结，显然没有搞清楚这个代码的行为是什么，它就是为了实现一个加法，所以不要搞那么复杂。
+
+            你所写的单元测试，文档化记录了你对上述内容的理解，当面对变化时，你至少应当知道当前代码的行为是怎样的。
+          </aside>
+        </section>
+        <section style="text-align: left">
+          <h4><span style="color: red">B</span>oundary Conditions<span class="fragment fade-in"> - 边界条件是否都正确？</span></h4>
+          <p class="fragment fade-in">这是贯穿于 Happy-Path 测试的一项<span style="color: lime">重要内容</span>，而且往往 bug 就发生在这些边界上，过去我们绝大多数的人都基于<span style="color: lime">经验性判断</span>来确定我们测试什么样的边界条件，而<span style="color: lime">经验</span>是<span style="color: lime">需要时间积累</span>的，也是<span style="color: lime">不便于传递</span>的。</p>
+          <p class="fragment fade-in">然而，边界条件的清晰定义在<span style="color: lime">2003年</span>的时候就被明确为：<span style="color: lime">CORRECT 原则</span>，到今天为止也没有太多的改变，大家是不是感觉到错过了些什么？</p>
+          <p class="fragment fade-in">这部分内容非常重要，所以放在后面部分专门来讲。</p>
+
+          <aside data-markdown class="notes">
+            边界条件可以理解为：我们的值总是在一定范围内是正确的，超出了这个范围的边界就是错误的，那么会导致“出错”的这个边界的定义就是边界条件。
+
+            Martin Fowler: the places where the methodology passes from appropriate to inappropriate.
+          </aside>
+        </section>
+        <section style="text-align: left">
+          <h4><span style="color: red">I</span>nverse Relationships<span class="fragment fade-in"> - 能否检查反向关系？</span></h4>
+          <p class="fragment fade-in">一句话：<span style="color: lime">正向得到的结果如果正确，那么反向推导回去也应该正确。</span></p>
+          <p class="fragment fade-in">尽可能<span style="color: lime">避免</span>在检查反向关系的时候<span style="color: lime">调用</span>与正向实现中<span style="color: lime">相同的方法或依赖</span>，因为它<span style="color: lime">有可能出错</span>。</p>
+          <p class="fragment fade-in"><span style="color: lime">Cross-Check（交叉检查）</span>是解决此类问题的有效办法。</p>
+
+          <aside data-markdown class="notes">
+            [Inverse Relationships](https://en.wikipedia.org/wiki/Negative_relationship) 在数学和统计学上各有一定的意义。
+
+            比如可以用平方的方式来检查一个计算平方根的方法，用读取记录的方式检查插入记录的方法等。
+          </aside>
+        </section>
+        <section style="text-align: left">
+          <h4><span style="color: red">C</span>ross-Check<span class="fragment fade-in"> - 能否用其它手段对结果进行再确认？</span></h4>
+          <p class="fragment fade-in">一个问题<span style="color: lime">往往</span>会有<span style="color: lime">多种解决方案</span>，而我们选择使用<span style="color: lime">其中一个</span>解决方案的时候，一般都是因为我们觉得它<span style="color: lime">看上去更漂亮</span>。</p>
+          <p class="fragment fade-in">所以，那些<span style="color: lime">相比之下较为丑陋</span>的解决方案，恰恰就可以<span style="color: lime">成为交叉检查的工具</span>。</p>
+          <p class="fragment fade-in">另一种办法是，可以使用<span style="color: lime">测试目标自身存在</span>的那些<span style="color: lime">相互之间存在某种平衡性约束</span>的东西，用它们去<span style="color: lime">相互检测</span>对方是否正确。</p>
+
+          <aside data-markdown class="notes">
+            [Cross-Check](https://en.wikipedia.org/wiki/Cross-checking)：联想下坐飞机时空姐在起飞前会收到机长或乘务长的命令：飞机即将起飞，请相互确认。这句话的英文就是：Cross Check。意思就是用其它手段（包括换人）来对事务进行再一次检测。
+
+            比如图书馆书籍的库存数和借出数，可以相互去检测对方是否正确，因为它们之间存在平衡性的约束。
+          </aside>
+        </section>
+        <section style="text-align: left">
+          <h4><span style="color: red">E</span>rror Conditions<span class="fragment fade-in"> - 能否强制触发错误条件？</span></h4>
+          <p class="fragment fade-in">既然有 Happy-Path，那么就一定会存在 <span style="color: lime">Unhappy-Path</span>，而我们也需要去<span style="color: lime">尝试应对</span>可能导致 Unhappy 的情况。</p>
+          <p class="fragment fade-in">强制触发错误条件就是为了去<span style="color: lime">检验</span>那些我们<span style="color: lime">尝试应对</span> Unhappy 所准备的方法是否能够<span style="color: lime">正常工作</span>。</p>
+          <p class="fragment fade-in"><span style="color: lime">Fishbowl</span> 和 <span style="color: lime">Mock</span> 会是你的好帮手。</p>
+
+          <aside data-markdown class="notes">
+            举例：
+
+            - Running out of memory
+            - Running out of disk space
+            - Issues with wall-clock time
+            - Network availability and errors
+            - System load
+            - Limited color palette
+            - Very high or very low video resolution
+          </aside>
+        </section>
+        <section style="text-align: left">
+          <h4><span style="color: red">P</span>erformance<span class="fragment fade-in"> - 性能特性是否在允许范围内？</span></h4>
+          <p class="fragment fade-in">性能问题需要用<span style="color: lime">真实的数据</span>，<span style="color: lime">真实的场景</span>，<span style="color: lime">反复的</span>，<span style="color: lime">较长时间的</span>，<span style="color: lime">更高级别的测试</span>来验证，<span style="color: lime">用测试数据说话而不是靠猜测</span>，而<span style="color: lime">单元级别的</span>性能测试则是最后进行精准定位的工具。</p>
+          <p class="fragment fade-in">请注意，纯粹用<span style="color: lime">单元测试</span>来验证<span style="color: lime">非端对端的</span>，因纯<span style="color: lime">代码书写</span>造成的性能问题是<span style="color: lime">极其少有的</span>，这也应该是最后一个定位的手段了。</p>
+
+          <aside data-markdown class="notes">
+            再一次提醒：不要搞混单元测试和单元级别的某种测试。
+
+            这方面的问题涉及性能优化这个比较大的领域，所以不做过多的讲解。
+          </aside>
+        </section>
+      </section>
+
+      <section>
+        <section>
+          <h2>如何确定测试边界？</h2>
+        </section>
+        <section>
+          <h3>CORRECT 原则</h3>
+          <ol class="fragment fade-in" data-fragment-index="1">
+            <li><span class="fragment grow highlight-red" data-fragment-index="2">C</span>onformance</li>
+            <li><span class="fragment grow highlight-red" data-fragment-index="2">O</span>rdering</li>
+            <li><span class="fragment grow highlight-red" data-fragment-index="2">R</span>ange</li>
+            <li><span class="fragment grow highlight-red" data-fragment-index="2">R</span>eference</li>
+            <li><span class="fragment grow highlight-red" data-fragment-index="2">E</span>xistence</li>
+            <li><span class="fragment grow highlight-red" data-fragment-index="2">C</span>ardinality</li>
+            <li><span class="fragment grow highlight-red" data-fragment-index="2">T</span>ime (absolute and relative)</li>
+          </ol>
+        </section>
+        <section style="text-align: left">
+          <h4><span style="color: red">C</span>onformance - 一致性</h4>
+          <p>值是否符合预期的格式？</p>
+
+          <aside data-markdown class="notes">
+            字符串比较也是一种格式匹配。
+
+            [VerbalExpressions](http://verbalexpressions.github.io/) - 解决了写正则表达式很困难的问题，也使得用正则表达式作为一种交叉检查的工具成为了可能。
+          </aside>
+        </section>
+        <section style="text-align: left">
+          <h4><span style="color: red">O</span>rdering - 有序性</h4>
+          <p>一组值的顺序是否符合预期？</p>
+
+          <aside data-markdown class="notes">
+            顺序分为有序性和无序性，一半我们测试的是有序性，而无序性往往隐含的意思是随机性，随机性是难以控制并测试的，所以一般都用 Mock 的方式来处理。
+          </aside>
+        </section>
+        <section style="text-align: left">
+          <h4><span style="color: red">R</span>ange - 区间性</h4>
+          <p>值是否在一个合理的最大值和最小值的范围内？</p>
+
+          <aside data-markdown class="notes">
+            变量所属的类型的取值范围可能会比你所需要或者想要的更加宽广，或者更加狭窄。在一个像 Java 这样良好的面向对象的语言中，我们应当尽可能的不要使用原生类型来储存具有边界的值，比如岁数或者角度。
+
+            滥用或极端的只使用原生类型也是一种代码的坏味道。
+
+            几乎所有有索引的值都应该被测试，一些意见：
+            - Start and end index have the same value
+            - First is greater than last
+            - Index is negative
+            - Index is greater than allowed
+            - Count doesn’t match actual number of items
+          </aside>
+        </section>
+        <section style="text-align: left">
+          <h4><span style="color: red">R</span>eference - 引用性 / 耦合性</h4>
+          <p>代码是否引用了一些不受其直接控制的外部因素？</p>
+
+          <aside data-markdown class="notes">
+            我们需要关注前置条件和后置条件对目标的干扰。
+
+            When testing a method, consider:
+            - What it references outside its scope
+            - What external dependencies it has
+            - Whether it depends on the object being in a certain state
+            - Any other conditions that must exist
+          </aside>
+        </section>
+        <section style="text-align: left">
+          <h4><span style="color: red">E</span>xistence - 存在性</h4>
+          <p>值是否存在（例如：非 null，非零，存在于某个集合中等）？</p>
+
+          <aside data-markdown class="notes">
+            空异常是一种经常如果处理不当则会经常给你以惊喜的错误，所以我们需要关注 null，零以及其他各种会为空的东西，比如空字符串。
+          </aside>
+        </section>
+        <section style="text-align: left">
+          <h4><span style="color: red">C</span>ardinality - 基数性</h4>
+          <p>是否恰好有足够的值？（重点关注 0-1-n 原则，问题往往发生在这三个边界上。）</p>
+
+          <aside data-markdown class="notes">
+            [Cardinality](https://en.wikipedia.org/wiki/Cardinality) - 对于一个集合，基数性的意思是测算“有多少元素在这个集合中”，所以这里的基数性其实和我们所理解的概念完全不一样，其意义是：计数。
+
+            举例：[Fencepost error](https://en.wikipedia.org/wiki/Off-by-one_error)
+          </aside>
+        </section>
+        <section style="text-align: left">
+          <h4><span style="color: red">T</span>ime - 时间性（绝对时间及相对时间）</h4>
+          <p>所有事情是否按顺序发生？是否在正确的时间？是否及时？</p>
+
+          <aside data-markdown class="notes">
+            你需要始终记得以下这些与时间相关的方面：
+            - 相对时间（时间上的顺序）
+            - 绝对时间（消耗的时间和钟表上的时间）
+            - 并发问题
+
+            对于时间敏感的代码，请一定要保证测试到了时间性的边界问题。
+          </aside>
+        </section>
+      </section>
+
+      <section>
+        <h2>总而言之...</h2>
+        <h3 class="fragment fade-in grow highlight-red">看清形势！</h3>
+        <h3 class="fragment fade-in grow highlight-red">坚持原则！</h3>
+      </section>
+
+      <section>
+        <h2>Q &amp; A</h2>
+      </section>
+
+      <section style="text-align: left">
+        <h1>完</h1>
+        <p>
+        - 请分享给更多的人 <br>
+        - 获取此演示：<a href="https://github.com/tdd-training-camp/unit-test-basic">https://github.com/tdd-training-camp/unit-test-basic</a>
+        </p>
+      </section>
+
+    </div>
+
+  </div>
+
+  <script src="lib/js/head.min.js"></script>
+  <script src="js/reveal.js"></script>
+
+  <script>
+    // Full list of configuration options available at:
+    // https://github.com/hakimel/reveal.js#configuration
+    Reveal.initialize({
+      controls: true,
+      progress: true,
+      history: true,
+      center: true,
+
+      transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+      // Optional reveal.js plugins
+      dependencies: [{
+        src: 'lib/js/classList.js',
+        condition: function() {
+          return !document.body.classList;
+        }
+      }, {
+        src: 'plugin/markdown/marked.js',
+        condition: function() {
+          return !!document.querySelector('[data-markdown]');
+        }
+      }, {
+        src: 'plugin/markdown/markdown.js',
+        condition: function() {
+          return !!document.querySelector('[data-markdown]');
+        }
+      }, {
+        src: 'plugin/highlight/highlight.js',
+        async: true,
+        callback: function() {
+          hljs.initHighlightingOnLoad();
+        }
+      }, {
+        src: 'plugin/zoom-js/zoom.js',
+        async: true
+      }, {
+        src: 'plugin/notes/notes.js',
+        async: true
+      }]
+    });
+  </script>
+
+</body>
+
+</html>
