@@ -603,7 +603,7 @@ public void testAssertThatHamcrestCoreMatchers() {
           <p>一组值的顺序是否符合预期？</p>
 
           <aside data-markdown class="notes">
-            顺序分为有序性和无序性，一半我们测试的是有序性，而无序性往往隐含的意思是随机性，随机性是难以控制并测试的，所以一般都用 Mock 的方式来处理。
+            顺序分为有序性和无序性，一般我们测试的是有序性，而无序性往往隐含的意思是随机性，随机性是难以控制并测试的，所以一般都用 Mock 的方式来处理。
           </aside>
         </section>
         <section style="text-align: left">
@@ -625,11 +625,9 @@ public void testAssertThatHamcrestCoreMatchers() {
         </section>
         <section style="text-align: left">
           <h4><span style="color: red">R</span>eference - 引用性 / 耦合性</h4>
-          <p>代码是否引用了一些不受其直接控制的外部因素？</p>
+          <p>代码是否引用了一些不受其直接控制的外部因素，由这些外部因素所引入的前置条件或后置条件所造成的影响是否符合预期？</p>
 
           <aside data-markdown class="notes">
-            我们需要关注前置条件和后置条件对目标的干扰。
-
             When testing a method, consider:
             - What it references outside its scope
             - What external dependencies it has
@@ -647,12 +645,15 @@ public void testAssertThatHamcrestCoreMatchers() {
         </section>
         <section style="text-align: left">
           <h4><span style="color: red">C</span>ardinality - 基数性</h4>
+          <p>其实按照通俗的理解方式是：计数性</p>
           <p>是否恰好有足够的值？（重点关注 0-1-n 原则，问题往往发生在这三个边界上。）</p>
 
           <aside data-markdown class="notes">
             [Cardinality](https://en.wikipedia.org/wiki/Cardinality) - 对于一个集合，基数性的意思是测算“有多少元素在这个集合中”，所以这里的基数性其实和我们所理解的概念完全不一样，其意义是：计数。
 
             举例：[Fencepost error](https://en.wikipedia.org/wiki/Off-by-one_error)
+
+            扎篱笆：我们要扎10米的篱笆，每个桩子间隔2米，总共需要多少个桩子？（这个问题往往会产生一个错误就是：10除以2等于5，然而正确的结果是需要6个桩子。）
           </aside>
         </section>
         <section style="text-align: left">
@@ -660,10 +661,10 @@ public void testAssertThatHamcrestCoreMatchers() {
           <p>所有事情是否按顺序发生？是否在正确的时间？是否及时？</p>
 
           <aside data-markdown class="notes">
-            你需要始终记得以下这些与时间相关的方面：
-            - 相对时间（时间上的顺序）
-            - 绝对时间（消耗的时间和钟表上的时间）
-            - 并发问题
+            你问题常常发生在这些与时间相关的方面：
+            - 相对时间（时间上的顺序是否正确？）
+            - 绝对时间（消耗的时间是否正确？）
+            - 并发问题（并发所带来的变化是否符合预期？）
 
             对于时间敏感的代码，请一定要保证测试到了时间性的边界问题。
           </aside>
