@@ -480,9 +480,9 @@ public void testAssertThatHamcrestCoreMatchers() {
           </ol>
 
           <aside data-markdown class="notes">
-            bicep - 袖肥/二头肌
+            bicep - \[baɪ'sep\] - 二头肌
 
-            Right-BICEP 可以记忆成“正确的袖肥”或者“右二头肌”……
+            Right-BICEP 可以记忆成“右二头肌”……
           </aside>
         </section>
         <section style="text-align: left">
@@ -494,9 +494,11 @@ public void testAssertThatHamcrestCoreMatchers() {
           <aside data-markdown class="notes">
             为什么叫做 Happy-Path？因为如果达成了某些目标，最终用户会 Happy。
 
-            举个简单的例子：你所测试的一个方法是实现一个加法计算，这个方法接受两个参数并返回这两个参数的和，你可以在测试时输入1和2然后得到3，也可以输入100和200然后得到300，但是我们到底应该输入哪一种才能证明这个代码运行时正确的？如果你会在这里纠结，显然没有搞清楚这个代码的行为是什么，它就是为了实现一个加法，所以不要搞那么复杂。
+            举个简单的例子：你所测试的一个方法是实现一个加法计算，这个方法接受两个参数并返回这两个参数的和，你可以在测试时输入1和2然后得到3，也可以输入100和200然后得到300，但是我们到底应该输入哪一种才能证明这个代码运行时正确的？
 
-            你所写的单元测试，文档化记录了你对上述内容的理解，当面对变化时，你至少应当知道当前代码的行为是怎样的。
+            它是否存在超出 100 + 200 就不等于300的情况？如果你会在这里纠结，那就很可能是不清楚边界条件是否正确，也就是没有搞清楚这个代码的行为是什么。
+
+            如果它就是为了实现一个纯粹的加法，用最简单的方式就好了，因为问题的边界很清晰。
           </aside>
         </section>
         <section style="text-align: left">
