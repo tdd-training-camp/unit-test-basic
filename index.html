@@ -541,7 +541,7 @@ public void testAssertThatHamcrestCoreMatchers() {
         <section style="text-align: left">
           <h4><span style="color: red">E</span>rror Conditions<span class="fragment fade-in"> - 能否强制触发错误条件？</span></h4>
           <p class="fragment fade-in">既然有 Happy-Path，那么就一定会存在 <span style="color: lime">Unhappy-Path</span>，而我们也需要去<span style="color: lime">尝试应对</span>可能导致 Unhappy 的情况。</p>
-          <p class="fragment fade-in">强制触发错误条件就是为了去<span style="color: lime">检验</span>那些我们<span style="color: lime">尝试应对</span> Unhappy 所准备的方法是否能够<span style="color: lime">正常工作</span>。</p>
+          <p class="fragment fade-in">强制触发错误条件就是为了去<span style="color: lime">检验</span>那些我们<span style="color: lime">尝试应对</span> Unhappy 所准备的方法是否能够<span style="color: lime">正常工作</span>，主动<span style="color: lime">模拟异常条件</span>或者主动<span style="color: lime">触发异常</span>。</p>
           <p class="fragment fade-in"><span style="color: lime">Fishbowl</span> 和 <span style="color: lime">Mock</span> 会是你的好帮手。</p>
 
           <aside data-markdown class="notes">
@@ -558,11 +558,14 @@ public void testAssertThatHamcrestCoreMatchers() {
         </section>
         <section style="text-align: left">
           <h4><span style="color: red">P</span>erformance<span class="fragment fade-in"> - 性能特性是否在允许范围内？</span></h4>
-          <p class="fragment fade-in">性能问题需要用<span style="color: lime">真实的数据</span>，<span style="color: lime">真实的场景</span>，<span style="color: lime">反复的</span>，<span style="color: lime">较长时间的</span>，<span style="color: lime">更高级别的测试</span>来验证，<span style="color: lime">用测试数据说话而不是靠猜测</span>，而<span style="color: lime">单元级别的</span>性能测试则是最后进行精准定位的工具。</p>
-          <p class="fragment fade-in">请注意，纯粹用<span style="color: lime">单元测试</span>来验证<span style="color: lime">非端对端的</span>，因纯<span style="color: lime">代码书写</span>造成的性能问题是<span style="color: lime">极其少有的</span>，这也应该是最后一个定位的手段了。</p>
+          <p class="fragment fade-in">性能问题需要用<span style="color: lime">真实的数据</span>，<span style="color: lime">真实的场景</span>，<span style="color: lime">反复的</span>，<span style="color: lime">较长时间的</span>，<span style="color: lime">更高级别的测试</span>来验证，<span style="color: lime">用测试数据说话而不是靠猜测</span>，而<span style="color: red">单元级别的性能测试</span>则是最后进行精准定位的工具。</p>
+          <p class="fragment fade-in"><span style="color: lime">绝大多数</span>的性能问题都是产生在<span style="color: lime">端对端</span>的衔接上，所以一般都由<span style="color: lime">基于集成测试的测试方法</span>来检测，而<span style="color: lime">非端对端的代码书写</span>所造成的性能问题<span style="color: lime">一般都不是根本问题</span>，或者通过增加硬件而不是修改代码就能解决。</p>
+          <p class="fragment fade-in">所以，纯粹用<span style="color: red">单元测试</span>来验证<span style="color: lime">非端对端的</span>，因纯<span style="color: lime">代码书写</span>造成的性能问题是<span style="color: lime">极其少有的</span>，这也应该是最后一个定位的手段了。</p>
 
           <aside data-markdown class="notes">
             再一次提醒：不要搞混单元测试和单元级别的某种测试。
+
+            举个例子：如果了解整洁代码，会发现有时候我们会因为代码可读性或者单一职责的缘故故意增加针对集合操作的循环数量，但是在硬件性能溢出的今天，因此带来的性能损耗几乎可以忽略不计，或者与因维护或修改而造成的人力成本投入相比，添加硬件其实更加便宜。
 
             这方面的问题涉及性能优化这个比较大的领域，所以不做过多的讲解。
           </aside>
