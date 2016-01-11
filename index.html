@@ -489,7 +489,7 @@ public void testAssertThatHamcrestCoreMatchers() {
           <h4><span style="color: red">Right</span><span class="fragment fade-in"> - 结果是正确的吗？</span></h4>
           <p class="fragment fade-in">目标看似简单，但它离不开一个领域叫做：<a href="https://en.wikipedia.org/wiki/Happy_path">Happy-Path</a> 测试 —— 一个<span style="color: lime">定义良好的测试用例</span>应当使用<span style="color: lime">明确的输入</span>，执行时<span style="color: lime">不会产生异常</span>，并且产生<span style="color: lime">预期的输出</span>。</p>
           <p class="fragment fade-in">它所反映的一个重要问题是：<span style="color: lime">我怎样才能知道我的代码是运行正确的呢？</span>如果你不能回答这个问题，说明你还不了解<span style="color: lime">最终用户的目标</span>或者所面对的<span style="color: lime">代码的行为</span>。</p>
-          <p class="fragment fade-in">换句话说：<span style="color: lime">首先，你必须知道你的代码怎样才算运行正确了！</span></p>
+          <p class="fragment fade-in">所以，首先需要<span style="color: lime">明确行为，确定边界条件。</span>换句话说：<span style="color: lime">你必须知道你的代码怎样才算运行正确了！</span></p>
 
           <aside data-markdown class="notes">
             为什么叫做 Happy-Path？因为如果达成了某些目标，最终用户会 Happy。
@@ -503,14 +503,15 @@ public void testAssertThatHamcrestCoreMatchers() {
         </section>
         <section style="text-align: left">
           <h4><span style="color: red">B</span>oundary Conditions<span class="fragment fade-in"> - 边界条件是否都正确？</span></h4>
-          <p class="fragment fade-in">这是贯穿于 Happy-Path 测试的一项<span style="color: lime">重要内容</span>，而且往往 bug 就发生在这些边界上，过去我们绝大多数的人都基于<span style="color: lime">经验性判断</span>来确定我们测试什么样的边界条件，而<span style="color: lime">经验</span>是<span style="color: lime">需要时间积累</span>的，也是<span style="color: lime">不便于传递</span>的。</p>
-          <p class="fragment fade-in">然而，边界条件的清晰定义在<span style="color: lime">2003年</span>的时候就被明确为：<span style="color: lime">CORRECT 原则</span>，到今天为止也没有太多的改变，大家是不是感觉到错过了些什么？</p>
+          <blockquote class="fragment fade-in">"...the places where the methodology passes from appropriate to inappropriate." - <span style="color: lime">Martin Fowler</span> </blockquote>
+          <p class="fragment fade-in">Bug 往往发生在边界条件上，过去我们绝大多数的人都基于<span style="color: lime">经验性判断</span>来确定我们测试什么样的边界条件，而<span style="color: lime">经验</span>是<span style="color: lime">需要时间积累</span>的，也是<span style="color: lime">不便于传递</span>的。</p>
+          <p class="fragment fade-in">然而，不同情况下的边界条件的清晰定义在<span style="color: lime">2003年</span>的时候就被 Andy Hunt 和 Dave Thomas 总结归纳为：<span style="color: lime">CORRECT 原则</span>，到今天为止也没有太多的改变，大家是不是感觉到错过了些什么？</p>
           <p class="fragment fade-in">这部分内容非常重要，所以放在后面部分专门来讲。</p>
 
           <aside data-markdown class="notes">
-            边界条件可以理解为：我们的值总是在一定范围内是正确的，超出了这个范围的边界就是错误的，那么会导致“出错”的这个边界的定义就是边界条件。
+            Martin Fowler: 边界条件就是当方法论由适合变为不适合时所处的那个地方。
 
-            Martin Fowler: the places where the methodology passes from appropriate to inappropriate.
+            边界条件可以理解为：我们的值通常在一定范围内是正确的，超出了这个范围的边界就是错误的，那么会导致“出错”的这个边界的定义就是边界条件，往往 bug 就发生在这些边界上。
           </aside>
         </section>
         <section style="text-align: left">
